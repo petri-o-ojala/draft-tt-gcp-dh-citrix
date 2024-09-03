@@ -1,0 +1,8 @@
+---
+formatter: markdown
+header-from: terraform-docs.tf
+output:
+  mode: replace
+  file: README.md
+sort:
+  enabled: true
