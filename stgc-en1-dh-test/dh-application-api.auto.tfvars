@@ -122,21 +122,21 @@ dynamichealth_app_api_instance = {
           scope = "project"
           role  = "roles/compute.viewer"
           member = [
-            "user:comext-petri.ojala@terveystalo.com"
+            "user:ext-petri.ojala@terveystalo.com"
           ]
         },
         "dynamichealth-api-instance-tunnel" : {
           scope = "iap_tunnel_instance"
           role  = "roles/iap.tunnelResourceAccessor"
           member = [
-            "user:comext-petri.ojala@terveystalo.com"
+            "user:ext-petri.ojala@terveystalo.com"
           ]
         }
         "dynamichealth-api-instance-access-instance" : {
           scope = "instance"
           role  = "roles/compute.osAdminLogin"
           member = [
-            "user:comext-petri.ojala@terveystalo.com"
+            "user:ext-petri.ojala@terveystalo.com"
           ]
         }
         "dynamichealth-api-instance-service-account" : {
@@ -144,7 +144,7 @@ dynamichealth_app_api_instance = {
           service_account = "dynamichealth-api-instance"
           role            = "roles/iam.serviceAccountUser"
           member = [
-            "user:comext-petri.ojala@terveystalo.com"
+            "user:ext-petri.ojala@terveystalo.com"
           ]
         }
       }
@@ -225,21 +225,21 @@ dynamichealth_app_api_instance = {
           scope = "project"
           role  = "roles/compute.viewer"
           member = [
-            "user:comext-petri.ojala@terveystalo.com"
+            "user:ext-petri.ojala@terveystalo.com"
           ]
         },
         "dynamichealth-api-instance-tunnel" : {
           scope = "iap_tunnel_instance"
           role  = "roles/iap.tunnelResourceAccessor"
           member = [
-            "user:comext-petri.ojala@terveystalo.com"
+            "user:ext-petri.ojala@terveystalo.com"
           ]
         }
         "dynamichealth-api-instance-access-instance" : {
           scope = "instance"
           role  = "roles/compute.osAdminLogin"
           member = [
-            "user:comext-petri.ojala@terveystalo.com"
+            "user:ext-petri.ojala@terveystalo.com"
           ]
         }
         "dynamichealth-api-instance-service-account" : {
@@ -247,7 +247,7 @@ dynamichealth_app_api_instance = {
           service_account = "dynamichealth-api-instance"
           role            = "roles/iam.serviceAccountUser"
           member = [
-            "user:comext-petri.ojala@terveystalo.com"
+            "user:ext-petri.ojala@terveystalo.com"
           ]
         }
       }
