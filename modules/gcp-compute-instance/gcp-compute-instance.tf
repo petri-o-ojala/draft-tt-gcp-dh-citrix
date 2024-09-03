@@ -3,7 +3,8 @@
 #
 
 locals {
-  google_compute_instance = google_compute_instance.lz
+  google_compute_instance      = google_compute_instance.lz
+  google_compute_node_template = google_compute_node_template.lz
 }
 
 data "cloudinit_config" "lz" {
@@ -539,4 +540,95 @@ resource "google_compute_attached_disk" "lz" {
     google_compute_region_disk.lz,
     google_compute_instance.lz
   ]
+}
+
+resource "google_compute_node_template" "lz" {
+  # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_node_template.html
+  #
+  # GCP Node Template for sole-tenant nodes
+  #
+  for_each = {
+    for template in local.gcp_compute_node_template : template.resource_index => template
+  }
+
+  description          = each.value.description
+  name                 = each.value.name
+  node_affinity_labels = each.value.node_affinity_labels
+  node_type            = each.value.node_type
+  cpu_overcommit_type  = each.value.cpu_overcommit_type
+  region               = each.value.region
+  project              = each.value.project
+
+  dynamic "node_type_flexibility" {
+    for_each = try(each.value.node_type_flexibility, null) == null ? [] : [1]
+
+    content {
+      cpus      = each.value.node_type_flexibility.cpus
+      memory    = each.value.node_type_flexibility.memory
+      local_ssd = each.value.node_type_flexibility.local_ssd
+    }
+  }
+
+  dynamic "server_binding" {
+    for_each = try(each.value.server_binding, null) == null ? [] : [1]
+
+    content {
+      type = each.value.server_binding.type
+    }
+  }
+}
+
+resource "google_compute_node_group" "lz" {
+  # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_node_group
+  #
+  # GCP Node Group for sole-tenant nodes
+  #
+  for_each = {
+    for group in local.gcp_compute_node_group : group.resource_index => group
+  }
+
+  node_template = lookup(local.google_compute_node_template, each.value.node_template, null) == null ? each.value.node_template : local.google_compute_node_template[each.value.node_template].id
+
+  description          = each.value.description
+  name                 = each.value.name
+  initial_size         = each.value.initial_size
+  maintenance_policy   = each.value.maintenance_policy
+  maintenance_interval = each.value.maintenance_interval
+  zone                 = each.value.zone
+  project              = each.value.project
+
+  dynamic "maintenance_window" {
+    for_each = try(each.value.maintenance_window, null) == null ? [] : [1]
+
+    content {
+      start_time = each.value.maintenance_window.start_time
+    }
+  }
+
+  dynamic "autoscaling_policy" {
+    for_each = try(each.value.autoscaling_policy, null) == null ? [] : [1]
+
+    content {
+      mode      = each.value.autoscaling_policy.mode
+      min_nodes = each.value.autoscaling_policy.min_nodes
+      max_nodes = each.value.autoscaling_policy.max_nodes
+    }
+  }
+
+  dynamic "share_settings" {
+    for_each = try(each.value.share_settings, null) == null ? [] : [1]
+
+    content {
+      share_type = each.value.share_settings.share_type
+
+      dynamic "project_map" {
+        for_each = coalesce(each.value.share_settings.project_map, [])
+
+        content {
+          id         = project_map.value.id
+          project_id = project_map.value.project_id
+        }
+      }
+    }
+  }
 }

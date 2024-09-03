@@ -5,6 +5,51 @@
 variable "compute" {
   description = "GCE configurations"
   type = object({
+    node = optional(object({
+      group = optional(map(object({
+        # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_node_group
+        node_template        = string
+        description          = optional(string)
+        name                 = optional(string)
+        initial_size         = optional(number)
+        maintenance_policy   = optional(string)
+        maintenance_interval = optional(string)
+        zone                 = optional(string)
+        project              = optional(string)
+        maintenance_window = optional(object({
+          start_time = string
+        }))
+        autoscaling_policy = optional(object({
+          mode      = string
+          min_nodes = optional(number)
+          max_nodes = number
+        }))
+        share_settings = optional(object({
+          share_type = string
+          project_map = optional(list(object({
+            id         = string
+            project_id = string
+          })))
+        }))
+      })))
+      template = optional(map(object({
+        # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_node_template.html
+        description          = optional(string)
+        name                 = optional(string)
+        node_affinity_labels = optional(map(string))
+        node_type            = optional(string)
+        cpu_overcommit_type  = optional(string)
+        region               = optional(string)
+        project              = optional(string)
+        node_type_flexibility = optional(object({
+          cpus   = optional(number)
+          memory = optional(number)
+        }))
+        server_binding = optional(object({
+          type = string
+        }))
+      })))
+    }))
     resource_policy = optional(map(object({
       name        = string
       description = optional(string)
@@ -611,5 +656,26 @@ locals {
       ]
       if iam.project_id != null
     ]
+  ])
+
+  #
+  # GCP Node Template for Sole-tenant nodes
+  #
+  gcp_compute_node_template = flatten([
+    for template_id, template in coalesce(try(var.compute.node.template, null), {}) : merge(
+      template,
+      {
+        resource_index = join("_", [template_id])
+      }
+    )
+  ])
+
+  gcp_compute_node_group = flatten([
+    for group_id, group in coalesce(try(var.compute.node.group, null), {}) : merge(
+      group,
+      {
+        resource_index = join("_", [group_id])
+      }
+    )
   ])
 }
