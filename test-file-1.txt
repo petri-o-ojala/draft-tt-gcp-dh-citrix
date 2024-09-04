@@ -4,3 +4,15 @@ Hello value1, how value2 you
 
 backend 10.0.0.1:8080
 backend 10.0.0.2:8080
+
+secrets:
+  
+  - name: "secretkey1"
+    valueFrom: "secretA"
+  
+  - name: "secretkey2"
+    valueFrom: "secretB"
+  
+  - name: "secretkey3"
+    valueFrom: "secret3"
+  
